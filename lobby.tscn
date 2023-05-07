@@ -95,16 +95,6 @@ size_flags_horizontal = 2
 size_flags_vertical = 2
 text = "The Warrior"
 
-[node name="Host" type="Button" parent="Connect"]
-layout_mode = 0
-offset_left = 48.5
-offset_top = 85.5
-offset_right = 113.5
-offset_bottom = 116.5
-size_flags_horizontal = 2
-size_flags_vertical = 2
-text = "Host"
-
 [node name="ErrorLabel" type="Label" parent="Connect"]
 layout_mode = 0
 offset_left = 15.0
@@ -127,5 +117,4 @@ text = "Find"
 [node name="ErrorDialog" type="AcceptDialog" parent="."]
 
 [connection signal="pressed" from="Players/Start" to="." method="_on_start_pressed"]
-[connection signal="pressed" from="Connect/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Connect/Join" to="." method="_on_join_pressed"]

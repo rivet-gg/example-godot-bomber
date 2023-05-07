@@ -39,7 +39,7 @@ func _rivet_get(service: String, path: String, on_success: Callable, on_fail: Ca
 
 func _rivet_post(service: String, path: String, body: Variant, on_success: Callable, on_fail: Callable):
 	var url = _build_url(service, path)
-	print("POST ", url)
+	print("POST %s: %s" % [url, body])
 
 	var http_request = HTTPRequest.new()
 	add_child(http_request)

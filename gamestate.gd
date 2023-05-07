@@ -25,6 +25,24 @@ signal connection_succeeded()
 signal game_ended()
 signal game_error(what)
 
+
+func _ready():
+	(multiplayer as SceneMultiplayer).auth_callback = _auth_callback
+	(multiplayer as SceneMultiplayer).auth_timeout = 15.0
+
+	(multiplayer as SceneMultiplayer).peer_authenticating.connect(self._player_authenticating)
+	(multiplayer as SceneMultiplayer).peer_authentication_failed.connect(self._player_authentication_failed)
+	
+	multiplayer.peer_connected.connect(self._player_connected)
+	multiplayer.peer_disconnected.connect(self._player_disconnected)
+	multiplayer.connected_to_server.connect(self._connected_ok)
+	multiplayer.connection_failed.connect(self._connected_fail)
+	multiplayer.server_disconnected.connect(self._server_disconnected)
+	
+	if OS.get_cmdline_user_args().has("--server"):
+		start_server()
+
+
 # Callback from SceneTree.
 func _player_authenticating(id):
 	print("Authenticating %s" % id)
@@ -40,8 +58,11 @@ func _player_authentication_failed(_id):
 
 # Callback from SceneTree.
 func _player_connected(id):
+	print("Player connected %s" % id)
+	
 	# Registration of a client beings here, tell the connected player that we are here.
-	register_player.rpc_id(id, player_name)
+	if !multiplayer.is_server():
+		register_player.rpc_id(id, player_name)
 
 
 # Callback from SceneTree.
@@ -74,7 +95,7 @@ func _connected_fail():
 
 
 # Lobby management functions.
-@rpc("any_peer")
+@rpc("any_peer", "reliable")
 func register_player(new_player_name):
 	var id = multiplayer.get_remote_sender_id()
 	players[id] = new_player_name
@@ -84,11 +105,12 @@ func register_player(new_player_name):
 func unregister_player(id):
 	# Disconnect player
 	if multiplayer.is_server():
-		var player_token = player_tokens[id]
+		var player_token = player_tokens.get(id)
 		player_tokens.erase(id)
+		print("Removing player %s" % player_token)
 		
 		RivetClient.player_disconnected({
-			"player_token": player_tokens.erase(id)
+			"player_token": player_token
 		}, func(_x): pass, func(_x): pass)
 	
 	# Remove player
@@ -96,7 +118,7 @@ func unregister_player(id):
 	player_list_changed.emit()
 
 
-@rpc("call_local")
+@rpc("call_local", "reliable")
 func load_world():
 	# Change scene.
 	var world = load("res://world.tscn").instantiate()
@@ -110,8 +132,12 @@ func load_world():
 	get_tree().set_pause(false) # Unpause and unleash the game!
 
 
-func host_game(new_player_name):
-	player_name = new_player_name
+func start_server():
+	print("Starting server on %s" % DEFAULT_PORT)
+	
+	# Take authority of the game state
+	set_multiplayer_authority(multiplayer.get_unique_id())
+	
 	peer = ENetMultiplayerPeer.new()
 	peer.create_server(DEFAULT_PORT, MAX_PEERS)
 	multiplayer.set_multiplayer_peer(peer)
@@ -128,13 +154,12 @@ func _auth_callback(id: int, buf: PackedByteArray):
 		var data = json.get_data()
 		
 		print("Player authenticating %s: %s" % [id, data])
-		player_tokens[id] = player_tokens
+		player_tokens[id] = data.player_token
 		RivetClient.player_connected({
 			"player_token": data.player_token
 		}, _rivet_player_connected.bind(id), _rivet_player_connect_failed.bind(id))
 	else:
-		# Auto-approve if client
-		
+		# Auto-approve if not a server
 		(multiplayer as SceneMultiplayer).complete_auth(id)
 
 
@@ -180,6 +205,7 @@ func get_player_name():
 	return player_name
 
 
+@rpc("authority", "call_remote", "reliable")
 func begin_game():
 	assert(multiplayer.is_server())
 	load_world.rpc()
@@ -211,17 +237,3 @@ func end_game():
 
 	game_ended.emit()
 	players.clear()
-
-
-func _ready():
-	(multiplayer as SceneMultiplayer).auth_callback = _auth_callback
-	(multiplayer as SceneMultiplayer).auth_timeout = 15.0
-
-	(multiplayer as SceneMultiplayer).peer_authenticating.connect(self._player_authenticating)
-	(multiplayer as SceneMultiplayer).peer_authentication_failed.connect(self._player_authentication_failed)
-	
-	multiplayer.peer_connected.connect(self._player_connected)
-	multiplayer.peer_disconnected.connect(self._player_disconnected)
-	multiplayer.connected_to_server.connect(self._connected_ok)
-	multiplayer.connection_failed.connect(self._connected_fail)
-	multiplayer.server_disconnected.connect(self._server_disconnected)

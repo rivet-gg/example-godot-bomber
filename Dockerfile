@@ -23,5 +23,5 @@ RUN mkdir -p build/linux \
 
 FROM ubuntu:22.04
 COPY --from=builder /app/build/linux/ /app
-CMD ["/app/game.x86_64", "--headless"]
+CMD ["/app/game.x86_64", "--headless", "--", "--server"]
 
