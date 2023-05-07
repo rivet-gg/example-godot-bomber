@@ -13,3 +13,7 @@ mono_crash.*.json
 .directory
 .DS_Store
 *~
+
+### Rivet ###
+.rivet/
+.env

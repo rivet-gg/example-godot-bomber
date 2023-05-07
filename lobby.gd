@@ -15,6 +15,10 @@ func _ready():
 		$Connect/Name.text = desktop_path[desktop_path.size() - 2]
 
 
+func _on_ready_pressed():
+	print("readying")
+	$RivetClient.lobby_ready()
+
 func _on_host_pressed():
 	if $Connect/Name.text == "":
 		$Connect/ErrorLabel.text = "Invalid name!"
