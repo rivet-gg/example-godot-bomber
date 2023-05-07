@@ -1,36 +1,25 @@
-# FROM alpine:3.17.3
-FROM fedora:36
+FROM fedora:36 AS builder
 
-# Environment Variables
-ENV GLIBC_VERSION="2.35-r1"
+# Install Godot & templates
 ENV GODOT_VERSION="4.0.2"
-
-# RUN apk update \
-#     && apk add --no-cache bash wget gcompat \
-#     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
-#     && apk add --allow-untrusted --force-overwrite glibc-${GLIBC_VERSION}.apk \
-#     && rm glibc-${GLIBC_VERSION}.apk \
-#     && wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
-#     && wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-#     && mkdir -p ~/.cache ~/.config/godot ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
-#     && unzip Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
-#     && mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot \
-#     && unzip Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-#     && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
-#     && rm Godot_v${GODOT_VERSION}-stable_export_templates.tpz Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
-
 RUN dnf update \
     && dnf install -y wget unzip \
     && wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
     && wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-    && mkdir -p ~/.cache ~/.config/godot ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
+    && mkdir -p ~/.cache ~/.config/godot ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable \
     && unzip Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
     && mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot \
     && unzip Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-    && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
+    && mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable \
     && rm Godot_v${GODOT_VERSION}-stable_export_templates.tpz Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
 
-#COPY . .
 
-# RUN godot -v --export "Linux" --headless ./build/linux/$exportName.x86_64
+# Build application
+WORKDIR /app
+COPY . .
+RUN godot -v --export-release "Linux/X11" --headless ./build/linux/game.x86_64
+
+FROM fedora:36
+COPY --from=builder /app/build/linux/ /app
+CMD ["/app/game.x86_64", "--headless"]
 
