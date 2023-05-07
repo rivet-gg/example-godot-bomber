@@ -21,6 +21,7 @@ config/icon="res://icon.png"
 [autoload]
 
 gamestate="*res://gamestate.gd"
+RivetClient="*res://rivet_client.gd"
 
 [display]
 

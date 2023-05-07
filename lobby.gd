@@ -14,14 +14,6 @@ func _ready():
 		var desktop_path = OS.get_system_dir(0).replace("\\", "/").split("/")
 		$Connect/Name.text = desktop_path[desktop_path.size() - 2]
 
-func _on_ready_pressed():
-	$RivetClient.lobby_ready()
-	
-func _on_find_pressed():
-	$RivetClient.find_lobby({
-		"game_modes": ["default"]
-	})
-
 func _on_host_pressed():
 	if $Connect/Name.text == "":
 		$Connect/ErrorLabel.text = "Invalid name!"
@@ -41,17 +33,12 @@ func _on_join_pressed():
 		$Connect/ErrorLabel.text = "Invalid name!"
 		return
 
-	var ip = $Connect/IPAddress.text
-	if not ip.is_valid_ip_address():
-		$Connect/ErrorLabel.text = "Invalid IP address!"
-		return
-
 	$Connect/ErrorLabel.text = ""
 	$Connect/Host.disabled = true
 	$Connect/Join.disabled = true
 
 	var player_name = $Connect/Name.text
-	gamestate.join_game(ip, player_name)
+	gamestate.join_game(player_name)
 
 
 func _on_connection_success():
@@ -90,11 +77,5 @@ func refresh_lobby():
 
 	$Players/Start.disabled = not multiplayer.is_server()
 
-
 func _on_start_pressed():
 	gamestate.begin_game()
-
-
-func _on_find_public_ip_pressed():
-	OS.shell_open("https://icanhazip.com/")
-

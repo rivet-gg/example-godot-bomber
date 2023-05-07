@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://jhdlqsokif5o"]
+[gd_scene load_steps=2 format=3 uid="uid://jhdlqsokif5o"]
 
 [ext_resource type="Script" path="res://lobby.gd" id="1"]
-[ext_resource type="Script" path="res://rivet_client.gd" id="2_0dqbe"]
 
 [node name="Lobby" type="Control"]
 layout_mode = 3
@@ -60,25 +59,6 @@ offset_bottom = 296.0
 size_flags_horizontal = 2
 size_flags_vertical = 2
 
-[node name="PortForward" type="Label" parent="Players"]
-layout_mode = 0
-offset_left = -124.0
-offset_top = 375.0
-offset_right = 128.0
-offset_bottom = 429.0
-theme_override_constants/line_spacing = 6
-text = "If you want non-LAN clients to connect,
-make sure the port 10567 in UDP
-is forwarded on your router."
-
-[node name="FindPublicIP" type="LinkButton" parent="Players"]
-layout_mode = 0
-offset_left = 168.0
-offset_top = 393.5
-offset_right = 341.0
-offset_bottom = 407.5
-text = "Find your public IP address"
-
 [node name="Connect" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 8
@@ -97,64 +77,33 @@ size_flags_vertical = 2
 
 [node name="NameLabel" type="Label" parent="Connect"]
 layout_mode = 0
-offset_left = 14.0
-offset_top = 11.0
-offset_right = 56.0
-offset_bottom = 25.0
+offset_left = 54.5
+offset_top = 8.5
+offset_right = 105.5
+offset_bottom = 34.5
 size_flags_horizontal = 2
 size_flags_vertical = 0
 text = "Name:"
 
 [node name="Name" type="LineEdit" parent="Connect"]
 layout_mode = 0
-offset_left = 17.0
-offset_top = 30.0
-offset_right = 173.0
-offset_bottom = 54.0
+offset_left = 54.5
+offset_top = 37.5
+offset_right = 210.5
+offset_bottom = 68.5
 size_flags_horizontal = 2
 size_flags_vertical = 2
 text = "The Warrior"
 
-[node name="IPLabel" type="Label" parent="Connect"]
-layout_mode = 0
-offset_left = 15.0
-offset_top = 66.0
-offset_right = 57.0
-offset_bottom = 80.0
-size_flags_horizontal = 2
-size_flags_vertical = 0
-theme_override_font_sizes/font_size = 16
-text = "IP:"
-
-[node name="IPAddress" type="LineEdit" parent="Connect"]
-layout_mode = 0
-offset_left = 17.0
-offset_top = 85.0
-offset_right = 173.0
-offset_bottom = 109.0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-text = "127.0.0.1"
-
 [node name="Host" type="Button" parent="Connect"]
 layout_mode = 0
-offset_left = 181.0
-offset_top = 31.0
-offset_right = 246.0
-offset_bottom = 51.0
+offset_left = 48.5
+offset_top = 85.5
+offset_right = 113.5
+offset_bottom = 116.5
 size_flags_horizontal = 2
 size_flags_vertical = 2
 text = "Host"
-
-[node name="Join" type="Button" parent="Connect"]
-layout_mode = 0
-offset_left = 181.0
-offset_top = 87.0
-offset_right = 246.0
-offset_bottom = 107.0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-text = "Join"
 
 [node name="ErrorLabel" type="Label" parent="Connect"]
 layout_mode = 0
@@ -166,32 +115,17 @@ size_flags_horizontal = 2
 size_flags_vertical = 0
 theme_override_colors/font_color = Color(0.820312, 0.291595, 0.291595, 1)
 
-[node name="Host2" type="Button" parent="Connect"]
-offset_left = -1.5
-offset_top = 177.5
-offset_right = 63.5
-offset_bottom = 208.5
-size_flags_horizontal = 2
-size_flags_vertical = 2
-text = "Ready"
-
-[node name="Host3" type="Button" parent="Connect"]
-offset_left = 78.5
-offset_top = 177.5
-offset_right = 143.5
-offset_bottom = 208.5
+[node name="Join" type="Button" parent="Connect"]
+offset_left = 144.5
+offset_top = 86.5
+offset_right = 209.5
+offset_bottom = 117.5
 size_flags_horizontal = 2
 size_flags_vertical = 2
 text = "Find"
 
 [node name="ErrorDialog" type="AcceptDialog" parent="."]
 
-[node name="RivetClient" type="Node" parent="."]
-script = ExtResource("2_0dqbe")
-
 [connection signal="pressed" from="Players/Start" to="." method="_on_start_pressed"]
-[connection signal="pressed" from="Players/FindPublicIP" to="." method="_on_find_public_ip_pressed"]
 [connection signal="pressed" from="Connect/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Connect/Join" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="Connect/Host2" to="." method="_on_ready_pressed"]
-[connection signal="pressed" from="Connect/Host3" to="." method="_on_find_pressed"]

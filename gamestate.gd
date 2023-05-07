@@ -12,10 +12,11 @@ var peer = null
 
 # Name for my player.
 var player_name = "The Warrior"
+var rivet_player_token = null
 
 # Names for remote players in id:name format.
 var players = {}
-var players_ready = []
+var player_tokens = {}
 
 # Signals to let lobby GUI know what's going on.
 signal player_list_changed()
@@ -23,6 +24,19 @@ signal connection_failed()
 signal connection_succeeded()
 signal game_ended()
 signal game_error(what)
+
+# Callback from SceneTree.
+func _player_authenticating(id):
+	print("Authenticating %s" % id)
+	var body = JSON.stringify({ "player_token": rivet_player_token })
+	(multiplayer as SceneMultiplayer).send_auth(id, body.to_utf8_buffer())
+
+
+func _player_authentication_failed(_id):
+	print("Authentication failed")
+	multiplayer.set_network_peer(null) # Remove peer
+	connection_failed.emit()
+
 
 # Callback from SceneTree.
 func _player_connected(id):
@@ -68,6 +82,16 @@ func register_player(new_player_name):
 
 
 func unregister_player(id):
+	# Disconnect player
+	if multiplayer.is_server():
+		var player_token = player_tokens[id]
+		player_tokens.erase(id)
+		
+		RivetClient.player_disconnected({
+			"player_token": player_tokens.erase(id)
+		}, func(_x): pass, func(_x): pass)
+	
+	# Remove player
 	players.erase(id)
 	player_list_changed.emit()
 
@@ -91,13 +115,61 @@ func host_game(new_player_name):
 	peer = ENetMultiplayerPeer.new()
 	peer.create_server(DEFAULT_PORT, MAX_PEERS)
 	multiplayer.set_multiplayer_peer(peer)
+	
+	RivetClient.lobby_ready({}, func(_x): pass, func(_x): pass)
 
 
-func join_game(ip, new_player_name):
+func _auth_callback(id: int, buf: PackedByteArray):
+	if multiplayer.is_server():
+		# Authenticate the client if connecting to server
+		
+		var json = JSON.new()
+		json.parse(buf.get_string_from_utf8())
+		var data = json.get_data()
+		
+		print("Player authenticating %s: %s" % [id, data])
+		player_tokens[id] = player_tokens
+		RivetClient.player_connected({
+			"player_token": data.player_token
+		}, _rivet_player_connected.bind(id), _rivet_player_connect_failed.bind(id))
+	else:
+		# Auto-approve if client
+		
+		(multiplayer as SceneMultiplayer).complete_auth(id)
+
+
+func _rivet_player_connected(_body, id: int):
+	print("Player authenticated %s" % id)
+	(multiplayer as SceneMultiplayer).complete_auth(id)
+
+
+func _rivet_player_connect_failed(error, id: int):
+	print("Player authentiation failed %s: %s" % [id, error])
+	(multiplayer as SceneMultiplayer).disconnect_peer(id)
+
+
+func join_game(new_player_name):
 	player_name = new_player_name
+	
+	RivetClient.find_lobby({
+		"game_modes": ["default"]
+	}, _lobby_found, _lobby_find_failed)
+
+
+func _lobby_found(response):
+	# Save token for authentication
+	rivet_player_token = response.player.token
+	
+	var port = response.ports.default
+	print("Connecting to ", port.host)
+	
 	peer = ENetMultiplayerPeer.new()
-	peer.create_client(ip, DEFAULT_PORT)
+	peer.create_client(port.hostname, port.port)
 	multiplayer.set_multiplayer_peer(peer)
+
+
+func _lobby_find_failed(error):
+	game_error.emit(error)
 
 
 func get_player_list():
@@ -142,6 +214,12 @@ func end_game():
 
 
 func _ready():
+	(multiplayer as SceneMultiplayer).auth_callback = _auth_callback
+	(multiplayer as SceneMultiplayer).auth_timeout = 15.0
+
+	(multiplayer as SceneMultiplayer).peer_authenticating.connect(self._player_authenticating)
+	(multiplayer as SceneMultiplayer).peer_authentication_failed.connect(self._player_authentication_failed)
+	
 	multiplayer.peer_connected.connect(self._player_connected)
 	multiplayer.peer_disconnected.connect(self._player_disconnected)
 	multiplayer.connected_to_server.connect(self._connected_ok)
