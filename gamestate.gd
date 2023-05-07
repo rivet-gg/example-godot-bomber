@@ -134,9 +134,7 @@ func load_world():
 
 func start_server():
 	print("Starting server on %s" % DEFAULT_PORT)
-	
-	# Take authority of the game state
-	set_multiplayer_authority(multiplayer.get_unique_id())
+
 	
 	peer = ENetMultiplayerPeer.new()
 	peer.create_server(DEFAULT_PORT, MAX_PEERS)
@@ -205,9 +203,12 @@ func get_player_name():
 	return player_name
 
 
-@rpc("authority", "call_remote", "reliable")
+# TODO: Figure out why this doesn't work as "authority"
+@rpc("any_peer")
 func begin_game():
-	assert(multiplayer.is_server())
+	if !multiplayer.is_server():
+		return
+	
 	load_world.rpc()
 
 	var world = get_tree().get_root().get_node("World")

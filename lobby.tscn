@@ -106,9 +106,9 @@ size_flags_vertical = 0
 theme_override_colors/font_color = Color(0.820312, 0.291595, 0.291595, 1)
 
 [node name="Join" type="Button" parent="Connect"]
-offset_left = 144.5
+offset_left = 92.5
 offset_top = 86.5
-offset_right = 209.5
+offset_right = 157.5
 offset_bottom = 117.5
 size_flags_horizontal = 2
 size_flags_vertical = 2
