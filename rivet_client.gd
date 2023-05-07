@@ -5,7 +5,10 @@ var base_url = "https://api.rivet.gg/v1"
 var token = "dev_staging.eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.CO7zlOr0MRDum9Cs_zAaEgoQ3TEdjSdYRVKFdM_hpFsQSiIxQi8KEgoQ8LiU6_EFRIm3J_bcUc9y5RoJMTI3LjAuMC4xIg4KB2RlZmF1bHQQx1IYAg.C_ApBjHtgQDYXciEHn2Ktv2rve8OOEuxHqJO2ZXnLeVyQdZAiZE813cFAAFxjo4gCPj4x5vSKNh2RCzWCdUQDA"
 
 func lobby_ready():
-	_rivet_post("matchmaker", "/lobbies/ready", "{}")
+	_rivet_post("matchmaker", "/lobbies/ready", {})
+
+func find_lobby(body: Variant):
+	_rivet_post("matchmaker", "/lobbies/find", body)
 
 func _build_url(service, path) -> String:
 	return base_url.replace("://", "://" + service + ".") + path

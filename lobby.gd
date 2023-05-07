@@ -14,10 +14,13 @@ func _ready():
 		var desktop_path = OS.get_system_dir(0).replace("\\", "/").split("/")
 		$Connect/Name.text = desktop_path[desktop_path.size() - 2]
 
-
 func _on_ready_pressed():
-	print("readying")
 	$RivetClient.lobby_ready()
+	
+func _on_find_pressed():
+	$RivetClient.find_lobby({
+		"game_modes": ["default"]
+	})
 
 func _on_host_pressed():
 	if $Connect/Name.text == "":
@@ -94,3 +97,4 @@ func _on_start_pressed():
 
 func _on_find_public_ip_pressed():
 	OS.shell_open("https://icanhazip.com/")
+
