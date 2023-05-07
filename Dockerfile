@@ -1,9 +1,9 @@
-FROM fedora:36 AS builder
+FROM ubuntu:22.04 AS builder
 
 # Install Godot & templates
 ENV GODOT_VERSION="4.0.2"
-RUN dnf update \
-    && dnf install -y wget unzip \
+RUN apt update -y \
+    && apt install -y wget unzip \
     && wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
     && wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz
 
@@ -21,7 +21,7 @@ COPY . .
 RUN mkdir -p build/linux \
     && godot -v --export-release "Linux/X11" --headless ./build/linux/game.x86_64
 
-FROM fedora:36
+FROM ubuntu:22.04
 COPY --from=builder /app/build/linux/ /app
 CMD ["/app/game.x86_64", "--headless"]
 
