@@ -7,8 +7,9 @@ func get_token():
 	if !token_env.is_empty():
 		return token_env
 		
-# TODO: Don't hardcode this	
-	return "dev_staging.eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.CO7zlOr0MRDum9Cs_zAaEgoQ3TEdjSdYRVKFdM_hpFsQSiIxQi8KEgoQ8LiU6_EFRIm3J_bcUc9y5RoJMTI3LjAuMC4xIg4KB2RlZmF1bHQQx1IYAg.C_ApBjHtgQDYXciEHn2Ktv2rve8OOEuxHqJO2ZXnLeVyQdZAiZE813cFAAFxjo4gCPj4x5vSKNh2RCzWCdUQDA"
+	# TODO: Don't hardcode this	
+	# return "dev_staging.eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.CO7zlOr0MRDum9Cs_zAaEgoQ3TEdjSdYRVKFdM_hpFsQSiIxQi8KEgoQ8LiU6_EFRIm3J_bcUc9y5RoJMTI3LjAuMC4xIg4KB2RlZmF1bHQQx1IYAg.C_ApBjHtgQDYXciEHn2Ktv2rve8OOEuxHqJO2ZXnLeVyQdZAiZE813cFAAFxjo4gCPj4x5vSKNh2RCzWCdUQDA"
+	return "pub_prod.eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.CIL2oIL1MRCCntzE_zAaEgoQtGYeHCV4Q2uRNuK-eW62CCIWGhQKEgoQuEGjxM3_SzSb-wFL3bj9fg.9huD2ANeUelveL_w7oZ0flzxUtrRlepepZ-pEfaDt6ds908Ivgz30O-FsqCvhdxHz_m0pNXSQcfko-krNAFuCQ"
 
 func lobby_ready(body: Variant, on_success: Callable, on_fail: Callable):
 	_rivet_post("matchmaker", "/lobbies/ready", body, on_success, on_fail)
