@@ -63,6 +63,9 @@ func _player_connected(id):
 	# Registration of a client beings here, tell the connected player that we are here.
 	if !multiplayer.is_server():
 		register_player.rpc_id(id, player_name)
+	
+	# Update player list if no other players present
+	player_list_changed.emit()
 
 
 # Callback from SceneTree.
