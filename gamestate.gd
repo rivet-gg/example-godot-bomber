@@ -216,7 +216,6 @@ func begin_game():
 
 	# Create a dictionary with peer id and respective spawn points, could be improved by randomizing.
 	var spawn_points = {}
-	spawn_points[1] = 0 # Server in spawn point 0.
 	var spawn_point_idx = 1
 	for p in players:
 		spawn_points[p] = spawn_point_idx
