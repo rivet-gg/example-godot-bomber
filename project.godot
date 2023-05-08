@@ -21,7 +21,7 @@ config/icon="res://icon.png"
 [autoload]
 
 gamestate="*res://gamestate.gd"
-RivetClient="*res://rivet_client.gd"
+RivetClient="*res://addons/rivet_api/rivet_client.gd"
 
 [display]
 
@@ -31,6 +31,10 @@ window/stretch/aspect="expand"
 [dotnet]
 
 project/assembly_name="Multiplayer Bomber"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/rivet_api/plugin.cfg")
 
 [input]
 
