@@ -22,6 +22,7 @@ config/icon="res://icon.png"
 
 gamestate="*res://gamestate.gd"
 RivetClient="*res://addons/rivet_api/rivet_client.gd"
+RivetHelper="*res://addons/rivet_api/rivet_helper.gd"
 
 [display]
 

@@ -11,29 +11,30 @@ func get_token():
 #	return "dev_staging.eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.CO7zlOr0MRDum9Cs_zAaEgoQ3TEdjSdYRVKFdM_hpFsQSiIxQi8KEgoQ8LiU6_EFRIm3J_bcUc9y5RoJMTI3LjAuMC4xIg4KB2RlZmF1bHQQx1IYAg.C_ApBjHtgQDYXciEHn2Ktv2rve8OOEuxHqJO2ZXnLeVyQdZAiZE813cFAAFxjo4gCPj4x5vSKNh2RCzWCdUQDA"
 	return "pub_prod.eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.CIL2oIL1MRCCntzE_zAaEgoQtGYeHCV4Q2uRNuK-eW62CCIWGhQKEgoQuEGjxM3_SzSb-wFL3bj9fg.9huD2ANeUelveL_w7oZ0flzxUtrRlepepZ-pEfaDt6ds908Ivgz30O-FsqCvhdxHz_m0pNXSQcfko-krNAFuCQ"
 
+
 func lobby_ready(body: Variant, on_success: Callable, on_fail: Callable):
-	_rivet_post("matchmaker", "/lobbies/ready", body, on_success, on_fail)
+	_rivet_request_with_body("POST", "matchmaker", "/lobbies/ready", body, on_success, on_fail)
 
 func find_lobby(body: Variant, on_success: Callable, on_fail: Callable):
-	_rivet_post("matchmaker", "/lobbies/find", body, on_success, on_fail)
-	
+	_rivet_request_with_body("POST", "matchmaker", "/lobbies/find", body, on_success, on_fail)
+
 func player_connected(body: Variant, on_success: Callable, on_fail: Callable):
-	_rivet_post("matchmaker", "/players/connected", body, on_success, on_fail)
-	
+	_rivet_request_with_body("POST", "matchmaker", "/players/connected", body, on_success, on_fail)
+
 func player_disconnected(body: Variant, on_success: Callable, on_fail: Callable):
-	_rivet_post("matchmaker", "/players/disconnected", body, on_success, on_fail)
+	_rivet_request_with_body("POST", "matchmaker", "/players/disconnected", body, on_success, on_fail)
 
 func _build_url(service, path) -> String:
 	return base_url.replace("://", "://" + service + ".") + path
-	
+
 func _build_headers() -> PackedStringArray:
 	return [
 		"Authorization: Bearer " + get_token(),
 	]
 	
-func _rivet_get(service: String, path: String, on_success: Callable, on_fail: Callable):
+func _rivet_request(method: String, service: String, path: String, on_success: Callable, on_fail: Callable):
 	var url = _build_url(service, path)
-	print("GET ", url)
+	RivetHelper.rivet_print("%s %s" % [method, url])
 	
 	var http_request = HTTPRequest.new()
 	add_child(http_request)
@@ -45,9 +46,9 @@ func _rivet_get(service: String, path: String, on_success: Callable, on_fail: Ca
 		if on_fail != null:
 			on_fail.call("Request failed to send: %s" % error)
 
-func _rivet_post(service: String, path: String, body: Variant, on_success: Callable, on_fail: Callable):
+func _rivet_request_with_body(method: String, service: String, path: String, body: Variant, on_success: Callable, on_fail: Callable):
 	var url = _build_url(service, path)
-	print("POST %s: %s" % [url, body])
+	print("%s %s: %s" % [method, url, body])
 
 	var http_request = HTTPRequest.new()
 	add_child(http_request)
@@ -76,7 +77,7 @@ func _http_request_completed(result, response_code, _headers, body, on_success: 
 	json.parse(body.get_string_from_utf8())
 	var response = json.get_data()
 	
-	print("Success")
+	RivetHelper.rivet_print("Success")
 	if on_success != null:
 		on_success.call(response)
 
