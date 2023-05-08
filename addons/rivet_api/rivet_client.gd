@@ -4,13 +4,8 @@ var base_url = "https://api.rivet.gg/v1"
 
 func get_token():
 	var token_env = OS.get_environment("RIVET_TOKEN")
-	if !token_env.is_empty():
-		return token_env
-		
-	# TODO: Don't hardcode this	
-#	return "dev_staging.eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.CO7zlOr0MRDum9Cs_zAaEgoQ3TEdjSdYRVKFdM_hpFsQSiIxQi8KEgoQ8LiU6_EFRIm3J_bcUc9y5RoJMTI3LjAuMC4xIg4KB2RlZmF1bHQQx1IYAg.C_ApBjHtgQDYXciEHn2Ktv2rve8OOEuxHqJO2ZXnLeVyQdZAiZE813cFAAFxjo4gCPj4x5vSKNh2RCzWCdUQDA"
-	return "pub_prod.eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.CIL2oIL1MRCCntzE_zAaEgoQtGYeHCV4Q2uRNuK-eW62CCIWGhQKEgoQuEGjxM3_SzSb-wFL3bj9fg.9huD2ANeUelveL_w7oZ0flzxUtrRlepepZ-pEfaDt6ds908Ivgz30O-FsqCvhdxHz_m0pNXSQcfko-krNAFuCQ"
-
+	assert(!token_env.is_empty(), "missing RIVET_TOKEN environment")
+	return token_env
 
 func lobby_ready(body: Variant, on_success: Callable, on_fail: Callable):
 	_rivet_request_with_body("POST", "matchmaker", "/lobbies/ready", body, on_success, on_fail)
@@ -48,7 +43,7 @@ func _rivet_request(method: String, service: String, path: String, on_success: C
 
 func _rivet_request_with_body(method: String, service: String, path: String, body: Variant, on_success: Callable, on_fail: Callable):
 	var url = _build_url(service, path)
-	print("%s %s: %s" % [method, url, body])
+	RivetHelper.rivet_print("%s %s: %s" % [method, url, body])
 
 	var http_request = HTTPRequest.new()
 	add_child(http_request)
