@@ -1,5 +1,7 @@
 # Multiplayer Bomber
 
+**This repo has moved [here](https://github.com/rivet-gg/examples)!**
+
 A multiplayer implementation of the classical bomberman game.
 One of the players should press "host", while the other
 should type in his address and press "play".
